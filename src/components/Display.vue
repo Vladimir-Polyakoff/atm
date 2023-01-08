@@ -8,27 +8,47 @@
       @click="hasCard = false, showPin = true"
     >Вставить карту</button>
     <PinCode
+      ref="PinCode"
       v-if="showPin"
-    @setError="err => error = err"
-    ref="PinCode"
-    :card="card"
+      :card="card"
+      @setError="err => error = err"
+      @success="showPin = false, showActions = true"
     />
+    <Actions
+    v-if="showActions"
+    ref="Actions"
+    :balance="card.balance"
+    :moneyList="moneyList"
+    @showFooter="flag => showFooter = flag "
+    />
+    <div class="footer"
+      v-if="showFooter">
+      <button
+        @click="$refs.Actions.showActions()"
+        >Назад
+      </button>
+    </div>
   </div>
 </template>
 
 <script>
 import PinCode from '@/components/PinCode.vue'
+import Actions from '@/components/Actions.vue'
 
 export default {
   name: 'THeDisplay',
   components: {
-    PinCode
+    PinCode,
+    Actions
   },
   data () {
     return {
       hasCard: true,
       showPin: false,
       error: '',
+      showActions: false,
+      showFooter: false,
+      moneyList: [5000, 5000, 1000, 500, 100],
       card: {
         name: 'Alesha',
         balance: 50000,
@@ -40,11 +60,21 @@ export default {
     del () {
       if (this.showPin) {
         this.$refs.PinCode.del()
+        return true
+      }
+      if (this.showActions) {
+        this.$refs.Actions.del()
+        return true
       }
     },
     set (num) {
       if (this.showPin) {
         this.$refs.PinCode.setPinCode(num)
+        return
+      }
+      if (this.showActions) {
+        this.$refs.Actions.set(num)
+        return true
       }
     }
   }
@@ -67,6 +97,12 @@ export default {
   button {
     padding: 4px 10px;
     cursor: pointer;
+  }
+  .footer{
+    position: absolute;
+    bottom: 10px;
+    display: flex;
+    justify-content: space-between;
   }
   .error {
     position: absolute;

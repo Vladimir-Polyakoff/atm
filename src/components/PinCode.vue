@@ -57,6 +57,8 @@ export default {
 
             this.$emit('setError', 'Карта заблокированна')
           }
+        } else {
+          this.$emit('success')
         }
       }
     }
