@@ -3,7 +3,6 @@
     <li
       v-for="button in buttonList"
       :key="button"
-      :style="!button && 'margin-left: 156px'"
       @click="$emit(button.length ? 'del' :'set', button)"
     >
       {{ button }}
@@ -16,7 +15,7 @@ export default {
   name: 'TheKeyboard',
   data () {
     return {
-      buttonList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 0, 'Удалить']
+      buttonList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 'Ок', 0, 'Удалить']
     }
   }
 }
