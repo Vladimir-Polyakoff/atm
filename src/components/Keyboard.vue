@@ -3,7 +3,7 @@
     <li
       v-for="button in buttonList"
       :key="button"
-      @click="$emit(button.length ? 'del' :'set', button)"
+      @click="click(button)"
     >
       {{ button }}
     </li>
@@ -16,6 +16,15 @@ export default {
   data () {
     return {
       buttonList: [1, 2, 3, 4, 5, 6, 7, 8, 9, 'Ок', 0, 'Удалить']
+    }
+  },
+  methods: {
+    click (key) {
+      if (typeof key === 'number') {
+        this.$emit('set', key)
+        return
+      }
+      this.$emit(key === 'Ок' ? 'ok' : 'del')
     }
   }
 }

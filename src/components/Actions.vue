@@ -1,10 +1,10 @@
 <template>
-  <div v-if="showButtons">
+  <div v-if="showButtons && !error">
     <button @click="showAction('set')">Внести деньги</button>
     <button @click="showAction('get')">Снять деньги</button>
     <button @click="showAction('views')">Посмотреть баланс</button>
   </div>
-  <div v-else>
+  <div v-else-if="!showButtons && !error">
     <div></div>
     <div v-if="actions.get">
       <div>Введите сумму</div>
@@ -15,6 +15,7 @@
       {{ balance | price }} руб.
     </div>
   </div>
+  <div class="error" v-else-if="error">{{ error }}</div>
 </template>
 
 <script>
@@ -40,7 +41,12 @@ export default {
         set: false,
         views: false
       },
-      amount: ''
+      moneyCount: {
+        all: 0,
+        sorted: []
+      },
+      amount: '',
+      error: ''
     }
   },
   // computed: {
@@ -63,8 +69,17 @@ export default {
         for (const key in this.actions) {
           this.actions[key] = false
         }
+        this.clear()
       }
       this.$emit('showFooter', !v)
+    }
+  },
+  created () {
+    if (this.moneyList.length) {
+      this.checkAtm(this.moneyList)
+    } else {
+      this.error = 'В банкомате нет денег'
+      this.$emit('showFooter', true)
     }
   },
   methods: {
@@ -88,6 +103,39 @@ export default {
       if (this.amount) {
         this.amount = this.amount.slice(0, -1)
       }
+    },
+    checkAtm (arr) {
+      this.moneyCount = {
+        all: arr.reduce((accum, element) => accum + element, 0),
+        sorted: [...new Set(arr)].sort((a, b) => b - a)
+      }
+
+      arr.forEach(element => {
+        this.moneyCount[element] ? this.moneyCount[element]++ : this.moneyCount[element] = 1
+      })
+    },
+    validMoney (amount) {
+      if (amount > this.moneyCount.all) {
+        this.error = 'недостаточно средств в банкомате'
+        return false
+      }
+      if (amount > this.balance) {
+        this.error = 'недостаточно средств на карте'
+        return false
+      }
+      return true
+    },
+    ok () {
+      console.log('ok')
+
+      if (this.actions.get && this.validMoney(Number(this.amount))) {
+        console.log()
+      }
+    },
+
+    clear () {
+      this.amount = ''
+      this.error = ''
     }
   }
 }

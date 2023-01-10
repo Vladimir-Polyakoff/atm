@@ -48,7 +48,7 @@ export default {
       error: '',
       showActions: false,
       showFooter: false,
-      moneyList: [5000, 5000, 1000, 500, 100],
+      moneyList: [5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 5000, 1000, 500, 100],
       card: {
         name: 'Alesha',
         balance: 50000,
@@ -75,6 +75,11 @@ export default {
       if (this.showActions) {
         this.$refs.Actions.set(num)
         return true
+      }
+    },
+    ok () {
+      if (this.showActions) {
+        this.$refs.Actions.ok()
       }
     }
   }
