@@ -20,6 +20,7 @@
 
 <script>
 // import price from '@/halpers/filters.js'
+import getMoney from '@/halpers/getMoney.js'
 
 export default {
   name: 'TheActions',
@@ -72,6 +73,9 @@ export default {
         this.clear()
       }
       this.$emit('showFooter', !v)
+    },
+    moneyList (v) {
+      this.checkAtm(v)
     }
   },
   created () {
@@ -126,13 +130,18 @@ export default {
       return true
     },
     ok () {
-      console.log('ok')
-
       if (this.actions.get && this.validMoney(Number(this.amount))) {
-        console.log()
+        const result = getMoney(Number(this.amount), this.moneyCount)
+
+        if (result.error) {
+          this.error = result.error
+        } else {
+          this.$emit('update', result)
+          this.actions.get = false
+          this.clear()
+        }
       }
     },
-
     clear () {
       this.amount = ''
       this.error = ''
