@@ -3,6 +3,9 @@
     <transition name="fade" v-if="error">
       <div class="error">{{ error }}</div>
     </transition>
+    <transition name="fade" v-if="successMessage">
+      <div class="success">{{ successMessage }}</div>
+    </transition>
     <button
       v-if="hasCard"
       @click="hasCard = false, showPin = true"
@@ -15,16 +18,17 @@
       @success="showPin = false, showActions = true"
     />
     <Actions
-    v-if="showActions"
-    ref="Actions"
-    :balance="card.balance"
-    :moneyList="moneyList"
-    @showFooter="flag => showFooter = flag "
+      v-if="showActions"
+      ref="Actions"
+      :balance="card.balance"
+      :moneyList="moneyList"
+      @showFooter="flag => showFooter = flag"
+      @update="updateMenuListBalance"
     />
     <div class="footer"
       v-if="showFooter">
       <button
-        @click="$refs.Actions.showActions()"
+        @click="back"
         >Назад
       </button>
     </div>
@@ -46,6 +50,7 @@ export default {
       hasCard: true,
       showPin: false,
       error: '',
+      successMessage: '',
       showActions: false,
       showFooter: false,
       moneyList: [5000, 5000, 1000, 500, 100],
@@ -76,6 +81,36 @@ export default {
         this.$refs.Actions.set(num)
         return true
       }
+    },
+    ok () {
+      if (this.showActions) {
+        this.$refs.Actions.ok()
+      }
+    },
+    back () {
+      if (this.successMessage) {
+        this.successMessage = ''
+      }
+
+      this.$refs.Actions.showActions()
+    },
+    updateMenuListBalance ({ received }) {
+      this.successMessage = 'заберите ваши деньги'
+      let sum = 0
+      const receivedArr = []
+
+      for (const key in received) {
+        sum += key * received[key]
+        for (let i = 1; i <= received[key]; i++) {
+          receivedArr.push(key)
+        }
+      }
+      this.card.balance = this.card.balance - sum
+
+      for (const key of receivedArr) {
+        const index = this.moneyList.indexOf(Number(key))
+        this.moneyList.splice(index, 1)
+      }
     }
   }
 }
@@ -104,11 +139,14 @@ export default {
     display: flex;
     justify-content: space-between;
   }
-  .error {
+  .error, .success {
     position: absolute;
     top: 20px;
     color: red;
     animation: animate .3s ease-in-out;
+  }
+  .success{
+    color: green;
   }
   @keyframes animate {
     0% {

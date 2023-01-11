@@ -3,6 +3,7 @@
     <Display ref="Display"/>
     <Keyboard
       @del="$refs.Display.del()"
+      @ok="$refs.Display.ok()"
       @set="num => $refs.Display.set(num)"
     />
   </div>
