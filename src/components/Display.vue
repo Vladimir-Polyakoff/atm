@@ -6,6 +6,9 @@
     <transition name="fade" v-if="successMessage">
       <div class="success">{{ successMessage }}</div>
     </transition>
+    <transition name="fade" v-if="remainder">
+      <div class="remainder">{{ remainder }}</div>
+    </transition>
     <button
       v-if="hasCard"
       @click="hasCard = false, showPin = true"
@@ -24,6 +27,7 @@
       :moneyList="moneyList"
       @showFooter="flag => showFooter = flag"
       @update="updateMenuListBalance"
+      @setSummFromAuto="setSummFromAuto"
     />
     <div class="footer"
       v-if="showFooter">
@@ -50,6 +54,7 @@ export default {
       hasCard: true,
       showPin: false,
       error: '',
+      remainder: '',
       successMessage: '',
       showActions: false,
       showFooter: false,
@@ -111,6 +116,27 @@ export default {
         const index = this.moneyList.indexOf(Number(key))
         this.moneyList.splice(index, 1)
       }
+    },
+    setSummFromAuto ({ list, remainder }) {
+      if (remainder) {
+        this.remainder = 'заберите оставшиеся купюры : ' + remainder
+      }
+      setTimeout(() => {
+        this.successMessage = ''
+        this.remainder = ''
+        this.error = ''
+      }, 2000)
+
+      if (!list.length) {
+        this.error = 'банкомат принимает купюры от 50 руб.'
+
+        return
+      }
+      const deposit = list.reduce((acum, num) => acum + num, 0)
+      this.card.balance += deposit
+
+      this.moneyList.push(...list)
+      this.successMessage = 'внесена сумма : ' + deposit
     }
   }
 }
@@ -139,7 +165,7 @@ export default {
     display: flex;
     justify-content: space-between;
   }
-  .error, .success {
+  .error, .success, .remainder {
     position: absolute;
     top: 20px;
     color: red;
@@ -147,6 +173,10 @@ export default {
   }
   .success{
     color: green;
+  }
+  .remainder {
+    color: blue;
+    top: 40px;
   }
   @keyframes animate {
     0% {
