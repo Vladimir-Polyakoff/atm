@@ -5,7 +5,12 @@
     <button @click="showAction('views')">Посмотреть баланс</button>
   </div>
   <div v-else-if="!showButtons && !error">
-    <div></div>
+    <ActionSet
+      v-if="actions.set"
+      ref="ActionSet"
+      @back="showButtons = true"
+      @setSummFromAuto="data => this.$emit('setSummFromAuto', data)"
+    ></ActionSet>
     <div v-if="actions.get">
       <div>Введите сумму</div>
       <div class="amount">{{ amount | price}}</div>
@@ -19,11 +24,15 @@
 </template>
 
 <script>
-// import price from '@/halpers/filters.js'
-import getMoney from '@/halpers/getMoney.js'
+// import price from '@/helpers/filters.js'
+import getMoney from '@/helpers/getMoney.js'
+import ActionSet from '@/components/actions/ActionSet.vue'
 
 export default {
   name: 'TheActions',
+  components: {
+    ActionSet
+  },
   props: {
     balance: {
       type: Number,
@@ -92,20 +101,26 @@ export default {
       this.showButtons = false
     },
     showActions () {
+      if (this.actions.set === true) {
+        this.$refs.ActionSet.back()
+        this.$refs.ActionSet.set()
+
+        return
+      }
       this.showButtons = true
     },
     set (num) {
-      if (this.actions.views) {
-        return
+      if (this.actions.get) {
+        this.amount += num
+      } else if (this.actions.set) {
+        this.$refs.ActionSet.set(num)
       }
-      this.amount += num
     },
     del () {
-      if (this.actions.views) {
-        return
-      }
       if (this.amount) {
         this.amount = this.amount.slice(0, -1)
+      } else if (this.actions.set) {
+        this.$refs.ActionSet.del()
       }
     },
     checkAtm (arr) {
@@ -140,6 +155,8 @@ export default {
           this.actions.get = false
           this.clear()
         }
+      } else if (this.actions.set) {
+        this.$refs.ActionSet.ok()
       }
     },
     clear () {
