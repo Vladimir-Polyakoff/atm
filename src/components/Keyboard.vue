@@ -1,15 +1,3 @@
-<template>
-  <ul>
-    <li
-      v-for="button in buttonList"
-      :key="button"
-      @click="click(button)"
-    >
-      {{ button }}
-    </li>
-  </ul>
-</template>
-
 <script>
 export default {
   name: 'TheKeyboard',
@@ -29,6 +17,18 @@ export default {
   }
 }
 </script>
+
+<template>
+  <ul>
+    <li
+      v-for="button in buttonList"
+      :key="button"
+      @click="click(button)"
+    >
+      {{ button }}
+    </li>
+  </ul>
+</template>
 
 <style scoped lang="scss">
   ul {

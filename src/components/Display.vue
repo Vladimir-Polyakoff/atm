@@ -1,44 +1,3 @@
-<template>
-  <div class="display">
-    <transition name="fade" v-if="error">
-      <div class="error">{{ error }}</div>
-    </transition>
-    <transition name="fade" v-if="successMessage">
-      <div class="success">{{ successMessage }}</div>
-    </transition>
-    <transition name="fade" v-if="remainder">
-      <div class="remainder">{{ remainder }}</div>
-    </transition>
-    <button
-      v-if="hasCard"
-      @click="hasCard = false, showPin = true"
-    >Вставить карту</button>
-    <PinCode
-      ref="PinCode"
-      v-if="showPin"
-      :card="card"
-      @setError="err => error = err"
-      @success="showPin = false, showActions = true"
-    />
-    <Actions
-      v-if="showActions"
-      ref="Actions"
-      :balance="card.balance"
-      :moneyList="moneyList"
-      @showFooter="flag => showFooter = flag"
-      @update="updateMenuListBalance"
-      @setSummFromAuto="setSummFromAuto"
-    />
-    <div class="footer"
-      v-if="showFooter">
-      <button
-        @click="back"
-        >Назад
-      </button>
-    </div>
-  </div>
-</template>
-
 <script>
 import PinCode from '@/components/PinCode.vue'
 import Actions from '@/components/Actions.vue'
@@ -121,6 +80,7 @@ export default {
       if (remainder) {
         this.remainder = 'заберите оставшиеся купюры : ' + remainder
       }
+
       setTimeout(() => {
         this.successMessage = ''
         this.remainder = ''
@@ -137,10 +97,70 @@ export default {
 
       this.moneyList.push(...list)
       this.successMessage = 'внесена сумма : ' + deposit
+    },
+    setSummFromHand (list) {
+      if (!list.length) {
+        this.error = 'внесите купюры'
+
+        return
+      }
+
+      setTimeout(() => {
+        this.successMessage = ''
+        this.error = ''
+      }, 2000)
+
+      const deposit = list.reduce((acum, num) => acum + num, 0)
+      this.card.balance += deposit
+
+      this.moneyList.push(...list)
+      this.successMessage = 'внесена сумма : ' + deposit
     }
   }
 }
 </script>
+
+<template>
+  <div class="display">
+    <transition name="fade" v-if="error">
+      <div class="error">{{ error }}</div>
+    </transition>
+    <transition name="fade" v-if="successMessage">
+      <div class="success">{{ successMessage }}</div>
+    </transition>
+    <transition name="fade" v-if="remainder">
+      <div class="remainder">{{ remainder }}</div>
+    </transition>
+    <button
+      v-if="hasCard"
+      @click="hasCard = false, showPin = true"
+    >Вставить карту</button>
+    <PinCode
+      ref="PinCode"
+      v-if="showPin"
+      :card="card"
+      @setError="err => error = err"
+      @success="showPin = false, showActions = true"
+    />
+    <Actions
+      v-if="showActions"
+      ref="Actions"
+      :balance="card.balance"
+      :moneyList="moneyList"
+      @showFooter="flag => showFooter = flag"
+      @update="updateMenuListBalance"
+      @setSummFromAuto="setSummFromAuto"
+      @setSummFromHand="setSummFromHand"
+    />
+    <div class="footer"
+      v-if="showFooter">
+      <button
+        @click="back"
+        >Назад
+      </button>
+    </div>
+  </div>
+</template>
 
 <style scoped>
   .display {

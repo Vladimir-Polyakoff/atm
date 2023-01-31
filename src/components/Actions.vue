@@ -1,28 +1,3 @@
-<template>
-  <div v-if="showButtons && !error">
-    <button @click="showAction('set')">Внести деньги</button>
-    <button @click="showAction('get')">Снять деньги</button>
-    <button @click="showAction('views')">Посмотреть баланс</button>
-  </div>
-  <div v-else-if="!showButtons && !error">
-    <ActionSet
-      v-if="actions.set"
-      ref="ActionSet"
-      @back="showButtons = true"
-      @setSummFromAuto="data => this.$emit('setSummFromAuto', data)"
-    ></ActionSet>
-    <div v-if="actions.get">
-      <div>Введите сумму</div>
-      <div class="amount">{{ amount | price}}</div>
-    </div>
-    <div v-if="actions.views">
-      <div>Ваш баланс на {{ getDateNow }}г.</div>
-      {{ balance | price }} руб.
-    </div>
-  </div>
-  <div class="error" v-else-if="error">{{ error }}</div>
-</template>
-
 <script>
 // import price from '@/helpers/filters.js'
 import getMoney from '@/helpers/getMoney.js'
@@ -166,6 +141,32 @@ export default {
   }
 }
 </script>
+
+<template>
+  <div v-if="showButtons && !error">
+    <button @click="showAction('set')">Внести деньги</button>
+    <button @click="showAction('get')">Снять деньги</button>
+    <button @click="showAction('views')">Посмотреть баланс</button>
+  </div>
+  <div v-else-if="!showButtons && !error">
+    <ActionSet
+      v-if="actions.set"
+      ref="ActionSet"
+      @back="showButtons = true"
+      @setSummFromAuto="data => this.$emit('setSummFromAuto', data)"
+      @setSummFromHand="data => this.$emit('setSummFromHand', data)"
+    ></ActionSet>
+    <div v-if="actions.get">
+      <div>Введите сумму</div>
+      <div class="amount">{{ amount | price}}</div>
+    </div>
+    <div v-if="actions.views">
+      <div>Ваш баланс на {{ getDateNow }}г.</div>
+      {{ balance | price }} руб.
+    </div>
+  </div>
+  <div class="error" v-else-if="error">{{ error }}</div>
+</template>
 
 <style scoped lang="scss">
   div {

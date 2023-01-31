@@ -1,10 +1,3 @@
-<template>
-  <div class="pin" v-if="!isCardBlocked">
-    <div class="pin__title">Введите PIN код</div>
-    <div class="pin__code">{{ pinCode }}</div>
-  </div>
-</template>
-
 <script>
 export default {
   name: 'PinCode',
@@ -65,6 +58,13 @@ export default {
   }
 }
 </script>
+
+<template>
+  <div class="pin" v-if="!isCardBlocked">
+    <div class="pin__title">Введите PIN код</div>
+    <div class="pin__code">{{ pinCode }}</div>
+  </div>
+</template>
 
 <style scoped>
   .pin__title {
